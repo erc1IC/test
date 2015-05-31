@@ -1,0 +1,334 @@
+C51 COMPILER V9.01   TEST                                                                  05/26/2015 18:58:28 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE TEST
+OBJECT MODULE PLACED IN test.OBJ
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE test.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg51.h>
+   2          #include<math.h>
+   3          
+   4          sbit beep=P2^3;
+   5          sbit dula=P2^0;         //??????????
+   6          sbit wela=P2^1;         //??????????            
+   7          sbit cs88=P2^2;         //?????????        cs88=0;//????      
+   8          sbit led_en=P2^5;
+   9          sbit DS1302=P2^7;       //??DS1302?????,??HJ-C52?????,??????
+  10          sbit SD=P2^6;           //??SD????,??HJ-C52?????,??????
+  11          
+  12          unsigned char code numbers_display[] = {0x3f, 0x06, 0x5b, 0x4f, 0x66,
+  13                                                                                          0x6d, 0x7d, 0x07, 0x7f, 0x6f,
+  14                                                                                          0xbf, 0x86, 0xdb, 0xcf, 0xe6,
+  15                                                                                          0xed, 0xfd, 0x87, 0xff, 0xef};
+  16          unsigned char code display_area[] = {0xfe,0xfd,0xfb,0xf7,0xef,0xdf,0xbf,0x7f}; 
+  17                                                                                   
+  18          //??,i(ms)
+  19          void delay(unsigned char i)
+  20          {
+  21   1              unsigned int j,k;
+  22   1              for(j = i; j > 0; j--)
+  23   1                      for(k = 125; k > 0; k--);
+  24   1      }
+  25          //??,??????
+  26          void display(unsigned char result[])
+  27          {
+  28   1              unsigned char num = result[0];
+  29   1              unsigned char area = 0;
+  30   1              
+  31   1              while(-1 < num && num < 20 && area != 9)
+  32   1              {
+  33   2                      P0 = display_area[area++];
+  34   2                      wela = 1;
+  35   2                      wela = 0;
+  36   2                      P0 = numbers_display[num];
+  37   2                      dula = 1;
+  38   2                      dula = 0;
+  39   2                      P0=0x00;          //?????????
+  40   2                      dula=1;
+  41   2                      dula=0;
+  42   2                      num = result[area];
+  43   2              }
+  44   1              
+  45   1      }
+  46          //????,???|??????-1
+  47          unsigned char keyscan()
+  48          {
+  49   1              unsigned char temp,key_click;
+  50   1              P3 = 0xfe;
+  51   1              temp = P3;
+  52   1              temp = temp & 0xf0;
+  53   1              if(temp != 0xf0)
+  54   1              {
+  55   2                      delay(10);
+C51 COMPILER V9.01   TEST                                                                  05/26/2015 18:58:28 PAGE 2   
+
+  56   2                      if(temp != 0xf0)
+  57   2                      {
+  58   3                              temp = P3;
+  59   3                              switch(temp)
+  60   3                              {
+  61   4                                      case 0xee:
+  62   4                                              key_click = 1;break;
+  63   4                                      case 0xde:
+  64   4                                              key_click = 2;break;
+  65   4                                      case 0xbe:
+  66   4                                              key_click = 3;break;
+  67   4                                      case 0x7e:
+  68   4                                              key_click = '+';break;
+  69   4                                      default:
+  70   4                                         key_click = -1;
+  71   4                              }
+  72   3                              while(temp != 0xf0)
+  73   3                              {
+  74   4                                 temp=P3;
+  75   4                                 temp=temp&0xf0;
+  76   4                              }
+  77   3                              return key_click;
+  78   3                      }
+  79   2              }
+  80   1              P3 = 0xfd;
+  81   1          temp = P3;
+  82   1          temp = temp & 0xf0;
+  83   1          if(temp != 0xf0)
+  84   1          {
+  85   2                      delay(10);
+  86   2                      if(temp != 0xf0)
+  87   2                      {
+  88   3                              temp = P3;
+  89   3                              switch(temp)
+  90   3                              {
+  91   4                                      case 0xed:
+  92   4                                              key_click = 4;break;
+  93   4                                      case 0xdd:
+  94   4                                              key_click = 5;break;
+  95   4                                      case 0xbd:
+  96   4                                              key_click = 6;break;
+  97   4                                      case 0x7d:
+  98   4                                              key_click = '-';break;
+  99   4                                      default:
+ 100   4                                         key_click = -1;
+ 101   4                              }
+ 102   3                              while(temp != 0xf0)
+ 103   3                              {
+ 104   4                                 temp=P3;
+ 105   4                                 temp=temp&0xf0;
+ 106   4                              }
+ 107   3                              return key_click;
+ 108   3                      }
+ 109   2              }
+ 110   1              P3 = 0xfb;
+ 111   1          temp = P3;
+ 112   1          temp = temp & 0xf0;
+ 113   1          if(temp != 0xf0)
+ 114   1          {
+ 115   2                      delay(10);
+ 116   2              if(temp != 0xf0)
+ 117   2                      {
+C51 COMPILER V9.01   TEST                                                                  05/26/2015 18:58:28 PAGE 3   
+
+ 118   3                      temp=P3;
+ 119   3                      switch(temp)
+ 120   3                      {
+ 121   4                                      case 0xeb:
+ 122   4                                              key_click = 7;break;
+ 123   4                                      case 0xdb:
+ 124   4                                              key_click = 8;break;
+ 125   4                                      case 0xbb:
+ 126   4                                              key_click = 9;break;
+ 127   4                                      case 0x7b:
+ 128   4                                              key_click = '*';break;
+ 129   4                                      default:
+ 130   4                                         key_click = -1;
+ 131   4                      }
+ 132   3                              while(temp != 0xf0)
+ 133   3                              {
+ 134   4                                 temp=P3;
+ 135   4                                 temp=temp&0xf0;
+ 136   4                              }
+ 137   3                              return key_click;
+ 138   3                      }
+ 139   2              }
+ 140   1              P3 = 0xf7;
+ 141   1          temp = P3;
+ 142   1          temp = temp & 0xf0;
+ 143   1          if(temp != 0xf0)
+ 144   1          {
+ 145   2              delay(10);
+ 146   2              if(temp != 0xf0)
+ 147   2              {
+ 148   3                      temp = P3;
+ 149   3                      switch(temp)
+ 150   3                      {
+ 151   4                                      case 0xe7:
+ 152   4                                              key_click = 0;break;
+ 153   4                                      case 0xd7:
+ 154   4                                              key_click = '.';break;
+ 155   4                                      case 0xb7:
+ 156   4                                              key_click = '=';break;
+ 157   4                                      case 0x77:
+ 158   4                                              key_click = '/';break;
+ 159   4                                      default:
+ 160   4                                              key_click = -1;
+ 161   4                       }
+ 162   3                               while(temp != 0xf0)
+ 163   3                              {
+ 164   4                                 temp=P3;
+ 165   4                                 temp=temp&0xf0;
+ 166   4                              }
+ 167   3                              return key_click;
+ 168   3                      }
+ 169   2              }
+ 170   1              return -1;
+ 171   1      }
+ 172          //????
+ 173          void reset(unsigned char *result)
+ 174          {
+ 175   1              unsigned char i = 1;
+ 176   1              *result = 0;
+ 177   1              while(i < 9)
+ 178   1              {
+ 179   2                      *(result + i++) = -1;
+C51 COMPILER V9.01   TEST                                                                  05/26/2015 18:58:28 PAGE 4   
+
+ 180   2              }
+ 181   1      }
+ 182          //??
+ 183          void mathfun(float count[], unsigned char math_key, unsigned char *result)
+ 184          {
+ 185   1              unsigned long ltemp, rtemp;
+ 186   1              unsigned char  point_area, result2[9];
+ 187   1              unsigned char k = 0, j = 0;
+ 188   1              float temp;
+ 189   1              switch(math_key)
+ 190   1              {
+ 191   2                      case '+':
+ 192   2                              temp = count[0] + count[1];
+ 193   2                              break;
+ 194   2                              
+ 195   2                      case '-':
+ 196   2                              temp = count[0] - count[1];
+ 197   2                              break;
+ 198   2                              
+ 199   2                      case '*':
+ 200   2                              temp = count[0] * count[1];
+ 201   2                              break;
+ 202   2                              
+ 203   2                      case '/':
+ 204   2                              temp = count[0] / count[1];
+ 205   2                              break;
+ 206   2                              
+ 207   2              }
+ 208   1              
+ 209   1              ltemp = (int)temp;
+ 210   1              do{
+ 211   2                      result2[k] = ltemp%10;
+ 212   2                      ltemp /= 10;
+ 213   2                      k++;
+ 214   2              }while(ltemp != 0);
+ 215   1              do{
+ 216   2                      result[j++] = result2[--k];
+ 217   2              }while(k);
+ 218   1              
+ 219   1              if(temp-(int)temp >= 0.01)
+ 220   1              {
+ 221   2                      result[--j] += 10;
+ 222   2                      k = 0; j++;
+ 223   2                      rtemp = (int)((temp - (int)temp)*100);
+ 224   2                      do{
+ 225   3                              result2[k] = rtemp%10;
+ 226   3                              rtemp /= 10;
+ 227   3                              k++;
+ 228   3                      }while(rtemp != 0);
+ 229   2                      do{
+ 230   3                              result[j++] = result2[--k];
+ 231   3                      }while(k);
+ 232   2              }
+ 233   1      }
+*** WARNING C280 IN LINE 186 OF TEST.C: 'point_area': unreferenced local variable
+ 234          
+ 235          
+ 236          void main()
+ 237          {
+ 238   1              unsigned char point_area, temp, math_key, result[9] = {0, -1, -1, -1, -1, -1, -1, -1, -1};
+ 239   1              unsigned char flag = 0,i = 0, j = 0;
+ 240   1              float count[2] = {0};
+C51 COMPILER V9.01   TEST                                                                  05/26/2015 18:58:28 PAGE 5   
+
+ 241   1              DS1302=0; //?DS1302??,??????
+ 242   1          SD=0;//?SD???,??????
+ 243   1              cs88=0;         //???????????????????
+ 244   1              led_en=0;
+ 245   1          cs88=0;     //????
+ 246   1              dula=0;
+ 247   1              wela=0;
+ 248   1              while(1){
+ 249   2                      temp = keyscan();
+ 250   2                      switch(temp)
+ 251   2                      {
+ 252   3                              case -1: break;
+ 253   3                              case '+':
+ 254   3                              case '-':
+ 255   3                              case '*':
+ 256   3                              case '/':
+ 257   3                                      if(i == 0)
+ 258   3                                      {
+ 259   4                                              math_key = temp;
+ 260   4                                              flag = 0;
+ 261   4                                              i++;
+ 262   4                                      }else{
+ 263   4                                              break;
+ 264   4                                      }
+ 265   3                                      j = 0; reset(result);
+ 266   3                                      break;
+ 267   3                                      
+ 268   3                              case '.':                        
+ 269   3                                      if(flag == 0 && j != 0)
+ 270   3                                      {
+ 271   4                                      result[--j] += 10;
+ 272   4                                      point_area = j++;
+ 273   4                                      flag = 1;
+ 274   4                                      }else{
+ 275   4                                              result[j] += 10;
+ 276   4                                              point_area = j++;
+ 277   4                                              flag = 1;
+ 278   4                                      }
+ 279   3                                      break;
+ 280   3                                      
+ 281   3                              case '=':
+ 282   3                                      reset(result);
+ 283   3                                      mathfun(count, math_key, result);
+ 284   3                                      i = 0; j = 0; flag = 0; count[0] = 0; count[1] = 0;
+ 285   3                                      break;
+ 286   3                                      
+ 287   3                              default:
+ 288   3                                      if(result[0] == 0 && temp == 0)break;
+ 289   3                                      if(flag == 0)
+ 290   3                                      {
+ 291   4                                              count[i] = count[i]*10 + temp;
+ 292   4                                      }else{
+ 293   4                                              count[i] = count[i] + temp/pow(10, j - point_area);
+ 294   4                                      }
+ 295   3                                      result[j++] = temp;
+ 296   3                      }
+ 297   2                      display(result);
+ 298   2              }
+ 299   1              
+ 300   1      }
+
+
+C51 COMPILER V9.01   TEST                                                                  05/26/2015 18:58:28 PAGE 6   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1450    ----
+   CONSTANT SIZE    =     45    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      62
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
